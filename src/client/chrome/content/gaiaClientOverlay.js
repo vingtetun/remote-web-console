@@ -1,5 +1,5 @@
 
-(function () {
+(function() {
   let debug = false;
   function log(str) {
     if (!debug)
@@ -11,7 +11,7 @@
   try {
     // XXX All this pref code is a dumb hack. We should use a cool XPCOM
     let GAIA_PREF_NAME = 'gaia.debug.webSocket';
-    Components.utils.import("resource://gre/modules/Services.jsm");
+    Components.utils.import('resource://gre/modules/Services.jsm');
     if (!Services.prefs.getBoolPref(GAIA_PREF_NAME, false)) {
       Services.prefs.setBoolPref(GAIA_PREF_NAME, true);
       window.addEventListener('unload', function() {
@@ -23,7 +23,7 @@
 
       remoteWebConsole('ws://localhost:6789');
     }
-  } catch(e) {
+  } catch (e) {
     dump(e + '\n');
   }
 
@@ -35,7 +35,7 @@
     };
 
     const kWebSocketConnectTimeout = 2000;
-    window.setInterval(function () {
+    window.setInterval(function() {
       if (socket && socket.readyState <= socket.OPEN)
         return;
       socket = new WebSocket(server);

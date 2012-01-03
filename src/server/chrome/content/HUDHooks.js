@@ -1,7 +1,7 @@
 
 function HUDHooks(hooks) {
   Cu.import('resource:///modules/HUDService.jsm');
-  Cu.import("resource:///modules/PropertyPanel.jsm");
+  Cu.import('resource:///modules/PropertyPanel.jsm');
       PropertyPanel.getChildItems = function(aItem, aRootElement) {
         dump('rejrker');
       };

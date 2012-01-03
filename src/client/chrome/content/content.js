@@ -1,7 +1,7 @@
 dump('======================= gaia content.js ======================\n');
 
 let Cu = Components.utils;
-Cu.import("resource://gre/modules/Services.jsm");
+Cu.import('resource://gre/modules/Services.jsm');
 
 (function RemoteHUDService() {
   let debug = true;
@@ -46,7 +46,7 @@ Cu.import("resource://gre/modules/Services.jsm");
                 'display': pair.display,
                 'type': pair.type,
                 'value': input + '["' + pair.name + '"]'
-              }
+              };
             });
             result = JSON.stringify(output);
             break;
@@ -54,7 +54,7 @@ Cu.import("resource://gre/modules/Services.jsm");
             result = Cu.evalInSandbox(input, sandbox, '1.8', 'Web Console', 1);
             break;
         }
-      } catch(e) {
+      } catch (e) {
         result = e;
       }
 
@@ -88,7 +88,7 @@ Cu.import("resource://gre/modules/Services.jsm");
     },
 
     _getType: function getType(obj) {
-      let type = obj === null ? "null" : typeof obj;
+      let type = obj === null ? 'null' : typeof obj;
       if (type == 'object' && obj.constructor && obj.constructor.name)
         type = obj.constructor.name;
       return type.toLowerCase();
@@ -126,14 +126,14 @@ Cu.import("resource://gre/modules/Services.jsm");
 /**
  * Convenience function to unwrap a wrapped object.
  *
- * @param aObject the object to unwrap
+ * @param aObject the object to unwrap.
  */
 
 function unwrap(aObject)
 {
   try {
     return XPCNativeWrapper.unwrap(aObject);
-  } catch(e) {
+  } catch (e) {
     return aObject;
   }
 }
@@ -157,7 +157,7 @@ function SandboxHelper(sandbox)
    *
    * @param string aId
    *        A string that is passed to document.getElementById.
-   * @returns nsIDOMNode or null
+   * @return nsIDOMNode or null
    */
   sandbox.$ = function SH_$(aId)
   {
@@ -174,7 +174,7 @@ function SandboxHelper(sandbox)
    *
    * @param string aSelector
    *        A string that is passed to document.querySelectorAll.
-   * @returns array of nsIDOMNode
+   * @return array of nsIDOMNode
    */
   sandbox.$$ = function SH_$$(aSelector)
   {
@@ -193,7 +193,7 @@ function SandboxHelper(sandbox)
    *        xPath search query to execute.
    * @param [optional] nsIDOMNode aContext
    *        Context to run the xPath query on. Uses window.document if not set.
-   * @returns array of nsIDOMNode
+   * @return array of nsIDOMNode
    */
   sandbox.$x = function SH_$x(aXPath, aContext)
   {
@@ -219,9 +219,9 @@ function SandboxHelper(sandbox)
   /**
    * Returns the currently selected object in the highlighter.
    *
-   * @returns nsIDOMNode or null
+   * @return nsIDOMNode or null
    */
-  Object.defineProperty(sandbox, "$0", {
+  Object.defineProperty(sandbox, '$0', {
     get: function() {
       console.error('Not implemented');
     },
@@ -245,7 +245,7 @@ function SandboxHelper(sandbox)
    *
    * @param object aObject
    *        Object to return the property names from.
-   * @returns array of string
+   * @return array of string
    */
   sandbox.keys = function SH_keys(aObject)
   {
@@ -262,7 +262,7 @@ function SandboxHelper(sandbox)
    *
    * @param object aObject
    *        Object to display the values from.
-   * @returns array of string
+   * @return array of string
    */
   sandbox.values = function SH_values(aObject)
   {
@@ -297,7 +297,7 @@ function SandboxHelper(sandbox)
    *
    * @param object aObject
    *        Object to inspect.
-   * @returns void
+   * @return void
    */
   sandbox.inspect = function SH_inspect(aObject)
   {
@@ -322,7 +322,7 @@ function SandboxHelper(sandbox)
    *
    * @param object aObject
    *        Object to print to the output.
-   * @returns void
+   * @return void
    */
   sandbox.pprint = function SH_pprint(aObject)
   {
@@ -346,7 +346,7 @@ function SandboxHelper(sandbox)
     let pairs = namesAndValuesOf(unwrap(aObject));
 
     pairs.forEach(function(pair) {
-      output.push("  " + pair.display);
+      output.push('  ' + pair.display);
     });
 
     sendAsyncMessage('console', {
@@ -361,7 +361,7 @@ function SandboxHelper(sandbox)
    *
    * @param string aString
    *        A string you want to output.
-   * @returns void
+   * @return void
    */
   sandbox.print = function SH_print(aString)
   {
@@ -396,7 +396,7 @@ const OPEN_CLOSE_BODY = {
  * @param   string aStr
  *          A string to analyse.
  *
- * @returns object
+ * @return object
  *          If there was an error in the string detected, then a object like
  *
  *            { err: "ErrorMesssage" }
@@ -444,7 +444,7 @@ function findCompletionBeginning(aStr)
           var last = bodyStack.pop();
           if (!last || OPEN_CLOSE_BODY[last.token] != c) {
             return {
-              err: "syntax error"
+              err: 'syntax error'
             };
           }
           if (c == '}') {
@@ -459,11 +459,11 @@ function findCompletionBeginning(aStr)
       // Double quote state > " <
       case STATE_DQUOTE:
         if (c == '\\') {
-          i ++;
+          i++;
         }
         else if (c == '\n') {
           return {
-            err: "unterminated string literal"
+            err: 'unterminated string literal'
           };
         }
         else if (c == '"') {
@@ -474,11 +474,11 @@ function findCompletionBeginning(aStr)
       // Single quoate state > ' <
       case STATE_QUOTE:
         if (c == '\\') {
-          i ++;
+          i++;
         }
         else if (c == '\n') {
           return {
-            err: "unterminated string literal"
+            err: 'unterminated string literal'
           };
           return;
         }
@@ -517,7 +517,7 @@ function JSPropertyProvider(aInputValue)
   var completionPart = aInputValue.substring(beginning.startPos);
 
   // Don't complete on just an empty string.
-  if (completionPart.trim() == "") {
+  if (completionPart.trim() == '') {
     return null;
   }
 
@@ -530,7 +530,7 @@ function JSPropertyProvider(aInputValue)
 
       // If obj is undefined or null, then there is no chance to run completion
       // on it. Exit here.
-      if (typeof obj === "undefined" || obj === null) {
+      if (typeof obj === 'undefined' || obj === null) {
         return null;
       }
 
@@ -553,7 +553,7 @@ function JSPropertyProvider(aInputValue)
 
   // If obj is undefined or null, then there is no chance to run
   // completion on it. Exit here.
-  if (typeof obj === "undefined" || obj === null) {
+  if (typeof obj === 'undefined' || obj === null) {
     return null;
   }
 
@@ -580,16 +580,16 @@ function isIteratorOrGenerator(aObject)
     return false;
   }
 
-  if (typeof aObject == "object") {
-    if (typeof aObject.__iterator__ == "function" ||
-        aObject.constructor && aObject.constructor.name == "Iterator") {
+  if (typeof aObject == 'object') {
+    if (typeof aObject.__iterator__ == 'function' ||
+        aObject.constructor && aObject.constructor.name == 'Iterator') {
       return true;
     }
 
     try {
       var str = aObject.toString();
-      if (typeof aObject.next == "function" &&
-          str.indexOf("[object Generator") == 0) {
+      if (typeof aObject.next == 'function' &&
+          str.indexOf('[object Generator') == 0) {
         return true;
       }
     }
@@ -613,11 +613,11 @@ function isIteratorOrGenerator(aObject)
  */
 function isNativeFunction(aFunction)
 {
-  return typeof aFunction == "function" && !("prototype" in aFunction);
+  return typeof aFunction == 'function' && !('prototype' in aFunction);
 }
 
 function isNonNativeGetter(aObject, aProp) {
-  if (typeof aObject != "object") {
+  if (typeof aObject != 'object') {
     return false;
   }
   var desc;
@@ -629,8 +629,8 @@ function isNonNativeGetter(aObject, aProp) {
     }
     catch (ex) {
       // Native getters throw here. See bug 520882.
-      if (ex.name == "NS_ERROR_XPC_BAD_CONVERT_JS" ||
-          ex.name == "NS_ERROR_XPC_BAD_OP_ON_WN_PROTO") {
+      if (ex.name == 'NS_ERROR_XPC_BAD_CONVERT_JS' ||
+          ex.name == 'NS_ERROR_XPC_BAD_OP_ON_WN_PROTO') {
         return false;
       }
       throw ex;
@@ -650,7 +650,7 @@ const TYPE_OBJECT = 0, TYPE_FUNCTION = 1, TYPE_ARRAY = 2, TYPE_OTHER = 3;
  *
  * @param object aObject
  *        The object to get properties for.
- * @returns array of object
+ * @return array of object
  *          Objects have the name, value, display, type, children properties.
  */
 function namesAndValuesOf(aObject)
@@ -662,14 +662,14 @@ function namesAndValuesOf(aObject)
 
   for (var propName in aObject) {
     // See bug 632275: skip deprecated width and height properties.
-    if (isDOMDocument && (propName == "width" || propName == "height")) {
+    if (isDOMDocument && (propName == 'width' || propName == 'height')) {
       continue;
     }
 
     // Also skip non-native getters.
     if (isNonNativeGetter(aObject, propName)) {
-      value = ""; // Value is never displayed.
-      presentable = {type: TYPE_OTHER, display: "Getter"};
+      value = ''; // Value is never displayed.
+      presentable = {type: TYPE_OTHER, display: 'Getter'};
     }
     else {
       try {
@@ -683,12 +683,12 @@ function namesAndValuesOf(aObject)
 
     let pair = {};
     pair.name = propName;
-    pair.display = propName + ": " + presentable.display;
+    pair.display = propName + ': ' + presentable.display;
     pair.type = presentable.type;
     pair.value = value;
 
     // Convert the pair.name to a number for later sorting.
-    pair.nameNumber = parseFloat(pair.name)
+    pair.nameNumber = parseFloat(pair.name);
     if (isNaN(pair.nameNumber)) {
       pair.nameNumber = false;
     }
@@ -728,7 +728,7 @@ function namesAndValuesOf(aObject)
  *
  * @param object aObject
  *        The object to operate on.
- * @returns object
+ * @return object
  *          A object with the form:
  *            {
  *              type: TYPE_OBJECT || TYPE_FUNCTION || TYPE_ARRAY || TYPE_OTHER,
@@ -740,40 +740,40 @@ function presentableValueFor(aObject)
   if (aObject === null || aObject === undefined) {
     return {
       type: TYPE_OTHER,
-      display: aObject === undefined ? "undefined" : "null"
+      display: aObject === undefined ? 'undefined' : 'null'
     };
   }
 
   let presentable;
   switch (aObject.constructor && aObject.constructor.name) {
-    case "Array":
+    case 'Array':
       return {
         type: TYPE_ARRAY,
-        display: "Array"
+        display: 'Array'
       };
 
-    case "String":
+    case 'String':
       return {
         type: TYPE_OTHER,
-        display: "\"" + aObject + "\""
+        display: '\"' + aObject + '\"'
       };
 
-    case "Date":
-    case "RegExp":
-    case "Number":
-    case "Boolean":
+    case 'Date':
+    case 'RegExp':
+    case 'Number':
+    case 'Boolean':
       return {
         type: TYPE_OTHER,
         display: aObject
       };
 
-    case "Iterator":
+    case 'Iterator':
       return {
         type: TYPE_OTHER,
-        display: "Iterator"
+        display: 'Iterator'
       };
 
-    case "Function":
+    case 'Function':
       presentable = aObject.toString();
       return {
         type: TYPE_FUNCTION,
@@ -785,8 +785,8 @@ function presentableValueFor(aObject)
       let m = /^\[object (\S+)\]/.exec(presentable);
 
       try {
-        if (typeof aObject == "object" && typeof aObject.next == "function" &&
-            m && m[1] == "Generator") {
+        if (typeof aObject == 'object' && typeof aObject.next == 'function' &&
+            m && m[1] == 'Generator') {
           return {
             type: TYPE_OTHER,
             display: m[1]
@@ -797,20 +797,21 @@ function presentableValueFor(aObject)
         // window.history.next throws in the typeof check above.
         return {
           type: TYPE_OBJECT,
-          display: m ? m[1] : "Object"
+          display: m ? m[1] : 'Object'
         };
       }
 
-      if (typeof aObject == "object" && typeof aObject.__iterator__ == "function") {
+      if (typeof aObject == 'object' &&
+          typeof aObject.__iterator__ == 'function') {
         return {
           type: TYPE_OTHER,
-          display: "Iterator"
+          display: 'Iterator'
         };
       }
 
       return {
         type: TYPE_OBJECT,
-        display: m ? m[1] : "Object"
+        display: m ? m[1] : 'Object'
       };
   }
 }

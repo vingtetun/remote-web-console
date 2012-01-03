@@ -13,7 +13,7 @@ const RemoteConsole = {
     let json = msg;
     try {
       json = JSON.parse(json);
-    } catch(e) {}
+    } catch (e) {}
 
     let console = this.localConsole;
     switch (json.type) {
@@ -76,7 +76,7 @@ const RemoteConsole = {
     let index = replies.length;
     replies.push(msg);
 
-    let currentThread = Cc["@mozilla.org/thread-manager;1"]
+    let currentThread = Cc['@mozilla.org/thread-manager;1']
                           .getService(Ci.nsIThreadManager)
                           .currentThread;
 
@@ -98,7 +98,7 @@ const RemoteConsole = {
       this.zombie = false;
       window.addEventListener('unload', (function() {
         this.zombie = true;
-      }).bind(this)); 
+      }).bind(this));
 
       // Configure the hooks to the HUDService
       let waitForMessageReply = this.waitForMessageReply.bind(this);
@@ -119,7 +119,7 @@ const RemoteConsole = {
             let data = result.data.split(',');
             return {
               'matchProp': data.pop(),
-              'matches': data 
+              'matches': data
             };
           },
           'evalInSandbox': function eval(str) {
@@ -149,7 +149,7 @@ const RemoteConsole = {
                   toSource: function() {
                     return result.data;
                   }
-                }
+                };
 
                 // XXX this is another hack to prevent the object to be
                 // inspectable if there is nothing to inspect...
@@ -177,19 +177,19 @@ const RemoteConsole = {
             }
           },
           'openPropertyPanel': function(evalStr, outputObj, anchor) {
-            let propPanel;
+            let panel;
             let buttons = [];
-         
+
             let self = this;
             if (evalStr !== null) {
               let button = {
-                label: HUDService.getStr("update.button"),
-                accesskey: HUDService.getStr("update.accesskey"),
-                oncommand: function () {
+                label: HUDService.getStr('update.button'),
+                accesskey: HUDService.getStr('update.accesskey'),
+                oncommand: function() {
                   try {
                     let result = self.evalInSandbox(evalStr);
                     if (result !== undefined)
-                      propPanel.treeView.data = result;
+                      panel.treeView.data = result;
                   }
                   catch (ex) {
                     self.console.error(ex);
@@ -200,19 +200,19 @@ const RemoteConsole = {
             }
 
             let doc = this.parentNode.ownerDocument;
-            let parent = doc.getElementById("mainPopupSet");
-            let title = !evalStr ? HUDService.getStr("jsPropertyTitle")
-                                 : HUDService.getFormatStr(
-                                     "jsPropertyInspectTitle",
+            let parent = doc.getElementById('mainPopupSet');
+            let title = !evalStr ? HUDService.getStr('jsPropertyTitle') :
+                                   HUDService.getFormatStr(
+                                     'jsPropertyInspectTitle',
                                      [evalStr]);
-         
-            propPanel = new PropertyPanel(parent, doc, title, outputObj, buttons);
-            propPanel.linkNode = anchor;
+
+            panel = new PropertyPanel(parent, doc, title, outputObj, buttons);
+            panel.linkNode = anchor;
 
             // XXX
-            propPanel.treeView.getChildItems = function(aItem, aRootElement) {
+            panel.treeView.getChildItems = function(aItem, aRootElement) {
               let newPairLevel;
-          
+
               if (!aRootElement) {
                 newPairLevel = aItem.level + 1;
                 aItem = aItem.value;
@@ -220,7 +220,7 @@ const RemoteConsole = {
               else {
                 newPairLevel = 0;
               }
-          
+
               let input = (typeof aItem == 'string') ? aItem : evalStr;
               let id = generateMessageId();
               let json = {
@@ -232,7 +232,7 @@ const RemoteConsole = {
               server.send(JSON.stringify(json));
               let result = waitForMessageReply(id);
               let json = JSON.parse(result.data);
-          
+
               let pairs = [];
               for (var prop in json) {
                 let pair = {};
@@ -246,17 +246,17 @@ const RemoteConsole = {
                 pair.children = pair.type == 0 || //TYPE_OBJECT
                                 pair.type == 1 || // TYPE_FUNCTION
                                 pair.type == 2; // TYPE_ARRAY
-                pairs.push(pair)
+                pairs.push(pair);
               }
-          
+
               return pairs;
             };
-            propPanel.treeView.data = outputObj;
-         
-            let panel = propPanel.panel;
-            panel.openPopup(anchor, "after_pointer", 0, 0, false, false);
-            panel.sizeTo(350, 450);
-            return propPanel;
+            panel.treeView.data = outputObj;
+
+            let popup = propPanel.panel;
+            popup.openPopup(anchor, 'after_pointer', 0, 0, false, false);
+            popup.sizeTo(350, 450);
+            return panel;
           }
         }
       });
