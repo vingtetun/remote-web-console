@@ -1,5 +1,8 @@
 dump('======================= gaia content.js ======================\n');
 
+let Cu = Components.utils;
+Cu.import("resource://gre/modules/Services.jsm");
+
 (function RemoteHUDService() {
   let debug = true;
   function log(str) {
@@ -7,7 +10,6 @@ dump('======================= gaia content.js ======================\n');
       dump('RemoteHUDService: ' + str + '\n');
   };
 
-  let Cu = Components.utils;
   let sandbox = null;
   let handler = {
     handleEvent: function(evt) {
@@ -82,7 +84,7 @@ dump('======================= gaia content.js ======================\n');
         'data': new String(data),
         'enumerable': enumerable
       };
-      sendAsyncMessage('gaia_exec:reply', reply);
+      sendAsyncMessage('console', reply);
     },
 
     _getType: function getType(obj) {
@@ -94,7 +96,31 @@ dump('======================= gaia content.js ======================\n');
   };
 
   addEventListener('DOMContentLoaded', handler);
-  addMessageListener('gaia_exec', handler);
+  addMessageListener('console', handler);
+})();
+
+(function RemoteConsoleAPI() {
+  let handler = {
+    observe: function(subject, topic, data) {
+      let message = subject.wrappedJSObject;
+
+      // TODO We need to ignore console messages coming from the
+      // web console if both the client and the server are run on
+      // the same instance.
+      if (message.filename == 'chrome://gaia/content/console.js')
+        return;
+
+      let json = {
+        'type': message.level.toString(),
+        'arguments': message.arguments,
+        'filename': message.filename,
+        'lineNumber': message.lineNumber,
+        'functionName' : message.functionName
+      };
+      sendAsyncMessage('console', json);
+    }
+  };
+  Services.obs.addObserver(handler, 'console-api-log-event', false);
 })();
 
 /**
