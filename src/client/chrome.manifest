@@ -1,3 +1,4 @@
 content gaia-client chrome/content/
 overlay  chrome://browser/content/browser.xul  chrome://gaia-client/content/gaiaClientOverlay.xul
+overlay  chrome://browser/content/shell.xul  chrome://gaia-client/content/gaiaClientOverlay.xul
 

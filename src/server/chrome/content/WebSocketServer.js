@@ -186,9 +186,7 @@ SocksClient.prototype = {
 
       case STATE_CONNECTED:
         try {
-          let frames = [bytes, null];
-          let frame = frames[0];
-          let nextFrame = frames[1];
+          let [frame, nextFrame] = [bytes, null];
           while (frame.length) {
             [frame, nextFrame] = this._parseFrame(frame);
             this._server.dispatchMessage(frame);

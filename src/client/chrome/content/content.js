@@ -1,10 +1,11 @@
 dump('======================= gaia content.js ======================\n');
 
 let Cu = Components.utils;
+let Ci = Components.interfaces;
 Cu.import('resource://gre/modules/Services.jsm');
 
 (function RemoteHUDService() {
-  let debug = true;
+  let debug = false;
   function log(str) {
     if (debug)
       dump('RemoteHUDService: ' + str + '\n');

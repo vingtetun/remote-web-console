@@ -253,7 +253,7 @@ const RemoteConsole = {
             };
             panel.treeView.data = outputObj;
 
-            let popup = propPanel.panel;
+            let popup = panel.panel;
             popup.openPopup(anchor, 'after_pointer', 0, 0, false, false);
             popup.sizeTo(350, 450);
             return panel;

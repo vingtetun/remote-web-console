@@ -12,7 +12,13 @@
     // XXX All this pref code is a dumb hack. We should use a cool XPCOM
     let GAIA_PREF_NAME = 'gaia.debug.webSocket';
     Components.utils.import('resource://gre/modules/Services.jsm');
-    if (!Services.prefs.getBoolPref(GAIA_PREF_NAME, false)) {
+
+    let started = false;
+    try {
+      started = Services.prefs.getBoolPref(GAIA_PREF_NAME, false);
+    } catch(e) {}
+
+    if (!started) {
       Services.prefs.setBoolPref(GAIA_PREF_NAME, true);
       window.addEventListener('unload', function() {
         Services.prefs.setBoolPref(GAIA_PREF_NAME, false);

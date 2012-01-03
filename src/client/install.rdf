@@ -14,6 +14,11 @@
        <em:minVersion>6.0</em:minVersion>
        <em:maxVersion>12.0.*</em:maxVersion>
      </Description>
+      <Description>
+       <em:id>{3c2e2abc-06d4-11e1-ac3b-374f68613e61}</em:id>
+       <em:minVersion>10.0</em:minVersion>
+       <em:maxVersion>12.0.*</em:maxVersion>
+     </Description>
     </em:targetApplication>
     <em:creator>Vivien Nicolas</em:creator>
     <em:description>Gaia Client</em:description>
