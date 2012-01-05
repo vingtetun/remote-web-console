@@ -113,6 +113,7 @@ RemoteHUDServiceImpl.prototype = {
     if (this.state != this.STATE_OPEN)
       return;
 
+    log("websocket send message: " + msg.json.level);
     this._socket.send(JSON.stringify(msg.json));
   }
 };

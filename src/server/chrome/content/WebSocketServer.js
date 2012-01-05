@@ -97,7 +97,7 @@ WebSocketServer.prototype = {
     });
 
     this.dispatchMessage({
-      'type': 'connect',
+      'level': 'connect',
       'host': host,
       'port': port
     });

@@ -15,13 +15,17 @@ const RemoteConsole = {
       json = JSON.parse(json);
     } catch (e) {}
 
+    if (!json)
+      return;
+
     let console = this.localConsole;
-    switch (json.type) {
+    switch (json.level) {
       case 'connect':
         console.info('Connection from ' + json.host);
         break;
-      case 'connect':
+      case 'disconnect':
         // XXX handle disconnect
+        console.info('Disconnection from ' + json.host);
         break;
       case 'reply':
         let replyId = json.replyTo;
@@ -34,27 +38,8 @@ const RemoteConsole = {
           }
         }
         break;
-      case 'log':
-      case 'debug':
-      case 'info':
-      case 'warn':
-      case 'error':
-      case 'group':
-      case 'groupCollapsed':
-      case 'groupEnd':
-      case 'time':
-      case 'timeEnd':
-      case 'dir':
-      case 'trace':
-        let processedArguments = [];
-        for (let arg in json.arguments)
-          processedArguments.push(json.arguments[arg]);
-
-        console[json.type].apply(null, processedArguments);
-        break;
-        break;
       default:
-        Cu.reportError('Unknow command: ' + json.type);
+        HUDService.logConsoleAPIMessage(this._hudId, json);
         break;
     }
   },
@@ -80,7 +65,7 @@ const RemoteConsole = {
                           .getService(Ci.nsIThreadManager)
                           .currentThread;
 
-    while (msg.state == 'waiting' && !this.zombie)
+    while (msg.state == 'waiting' && !this.isZombie)
       currentThread.processNextEvent(true);
 
     replies.splice(index, 1);
@@ -95,15 +80,10 @@ const RemoteConsole = {
       server.addListener(this.interpret.bind(this));
       server.start();
 
-      this.zombie = false;
-      window.addEventListener('unload', (function() {
-        this.zombie = true;
-      }).bind(this));
-
       // Configure the hooks to the HUDService
       let waitForMessageReply = this.waitForMessageReply.bind(this);
       let generateMessageId = this.generateMessageId.bind(this);
-      new HUDHooks({
+      let hudHooks = new HUDHooks({
         'jsterm': {
           'propertyProvider': function autocomplete(scope, inputValue) {
             let id = generateMessageId();
@@ -115,6 +95,8 @@ const RemoteConsole = {
 
             server.send(JSON.stringify(json));
             let result = waitForMessageReply(id);
+            if (!result)
+              return;
 
             let data = result.data.split(',');
             return {
@@ -134,6 +116,9 @@ const RemoteConsole = {
 
             server.send(JSON.stringify(json));
             let result = waitForMessageReply(id);
+            if (!result)
+              return;
+
             switch (result.type) {
               case 'error':
               case 'syntaxerror':
@@ -260,7 +245,9 @@ const RemoteConsole = {
           }
         }
       });
+      
 
+      this._hudId = hudHooks.hudId;
     } catch (e) {
       dump(e);
     }
@@ -269,6 +256,8 @@ const RemoteConsole = {
   uninit: function rc_uninit() {
     this._server.stop();
     delete this._server;
+
+    this.isZombie = true;
   }
 };
 

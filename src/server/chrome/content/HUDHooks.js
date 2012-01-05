@@ -2,9 +2,6 @@
 function HUDHooks(hooks) {
   Cu.import('resource:///modules/HUDService.jsm');
   Cu.import('resource:///modules/PropertyPanel.jsm');
-      PropertyPanel.getChildItems = function(aItem, aRootElement) {
-        dump('rejrker');
-      };
 
   this._init(HUDService.currentContext(), hooks);
 }
@@ -38,6 +35,8 @@ HUDHooks.prototype = {
     context.addEventListener('resize', function resizeHandler() {
       hud.style.height = context.innerHeight + 'px';
     });
+
+    this.hudId = hudId;
   }
 };
 

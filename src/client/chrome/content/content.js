@@ -1,4 +1,4 @@
-dump('======================= gaia content.js ======================\n');
+dump('======================= remote web console: content.js ======================\n');
 
 let Cu = Components.utils;
 let Ci = Components.interfaces;
@@ -26,7 +26,7 @@ Cu.import('resource://gre/modules/Services.jsm');
       let reply = {
         'id': json.id + 1,
         'replyTo': json.id,
-        'type': 'reply'
+        'level': 'reply'
       };
 
       let input = json.data;
@@ -105,15 +105,17 @@ Cu.import('resource://gre/modules/Services.jsm');
     observe: function(subject, topic, data) {
       let message = subject.wrappedJSObject;
 
-      // TODO We need to ignore console messages coming from the
-      // web console if both the client and the server are run on
-      // the same instance.
-      if (message.filename == 'chrome://gaia/content/console.js')
-        return;
-
+      let args = message.arguments;
+      if (typeof args == 'object' && args.valueOf() == '[object Arguments]') {
+        let processedArguments = [];
+        for (let arg in args)
+          processedArguments.push(args[arg]);
+        args = processedArguments;
+      }
+    
       let json = {
-        'type': message.level.toString(),
-        'arguments': message.arguments,
+        'level': message.level,
+        'arguments': args,
         'filename': message.filename,
         'lineNumber': message.lineNumber,
         'functionName' : message.functionName
@@ -236,7 +238,7 @@ function SandboxHelper(sandbox)
   sandbox.clear = function SH_clear()
   {
     sendAsyncMessage('console', {
-      'type': 'command',
+      'level': 'command',
       'command': 'clear'
     });
   };
@@ -287,7 +289,7 @@ function SandboxHelper(sandbox)
   sandbox.help = function SH_help()
   {
     sendAsyncMessage('console', {
-      'type': 'command',
+      'level': 'command',
       'command': 'help',
       'language': window.navigator.language
     });
@@ -303,7 +305,7 @@ function SandboxHelper(sandbox)
   sandbox.inspect = function SH_inspect(aObject)
   {
     sendAsyncMessage('console', {
-      'type': 'command',
+      'level': 'command',
       'command': 'inspect',
       'object': unwrap(aObject) // XXX jsonify it
     });
@@ -312,7 +314,7 @@ function SandboxHelper(sandbox)
   sandbox.inspectrules = function SH_inspectrules(aNode)
   {
     sendAsyncMessage('console', {
-      'type': 'command',
+      'level': 'command',
       'command': 'inspectrules',
       'node': aNode // XXX jsonify it
     });
@@ -336,7 +338,7 @@ function SandboxHelper(sandbox)
     }
     else if (typeof aObject === 'function') {
       sendAsyncMessage('console', {
-        'type': 'command',
+        'level': 'command',
         'command': 'pprint',
         'data': aObject.toSource()
       });
@@ -351,7 +353,7 @@ function SandboxHelper(sandbox)
     });
 
     sendAsyncMessage('console', {
-      'type': 'command',
+      'level': 'command',
       'command': 'pprint',
       'data': output.join('\n')
     });
@@ -367,7 +369,7 @@ function SandboxHelper(sandbox)
   sandbox.print = function SH_print(aString)
   {
     sendAsyncMessage('console', {
-      'type': 'command',
+      'level': 'command',
       'command': 'print',
       'data': '' + aString
     });
